@@ -1,0 +1,10 @@
+# Ignore YAML files
+*.yaml
+*.yml
+
+# Ignore macOS desktop service store files
+.DS_Store
+
+# Alternatively, you can ignore specific temporary files
+notebooks/ipynb_checkpoints/
+.ipynb_checkpoints
