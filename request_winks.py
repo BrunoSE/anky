@@ -1,19 +1,22 @@
 import requests
 import json
+import yaml
 
-winks = [8]
 
-api_key = ""
-
-# Create a dictionary for the header
-headers = {"x-api-key": api_key}
+winks = list(range(1,8))
+filename = "config.yaml"
+try:
+  with open(filename, "r") as file:
+    config_data = yaml.safe_load(file)
+except FileNotFoundError:
+  raise FileNotFoundError(f"Error: YAML file not found: {filename}")
 
 for wink_n in winks:
     # Define the URL and API key
-    url = f"https://server-s3.onrender.com/get-writings-by-wink/{wink_n}"  # Replace with the actual URL
+    url = f"https://server-s3.onrender.com/book-data/{wink_n}"  # Replace with the actual URL
     
     # Send the GET request
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers={"x-api-key": config_data["WINK_API_KEY"]})
     
     # Check for successful response
     if response.status_code == 200:
