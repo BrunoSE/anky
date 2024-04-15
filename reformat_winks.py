@@ -1,6 +1,10 @@
 import json
 from transformers import LlamaTokenizer
+
+PROMPT_FORMAT_ID = "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO"
 tokenizer = LlamaTokenizer.from_pretrained(PROMPT_FORMAT_ID, trust_remote_code=True)
+wink_path = "./winks"
+train_path = "./training_data"
 
 def return_formatted_msgs(user_query, assistant_answer):
     msgs_ = [
@@ -9,11 +13,8 @@ def return_formatted_msgs(user_query, assistant_answer):
     ]
     return msgs_
 
-data = []
-wink_path = "./winks"
-
-for wink_n in range(8,9):
-
+for wink_n in range(1,9):
+    data = []
     training_wink_data = []
     training_chapter_data = []
 
@@ -31,10 +32,9 @@ for wink_n in range(8,9):
     aux_msg = return_formatted_msgs(super_prompt, chapter)
     training_chapter_data.append(tokenizer.apply_chat_template(aux_msg, tokenize=False))
 
-    data.append({'wink_number': wink_n,
-                 'training_wink_data': training_wink_data,
-                 'training_chapter_data': training_chapter_data})
+    data = {'wink_number': wink_n,
+            'training_wink_data': training_wink_data,
+            'training_chapter_data': training_chapter_data}
 
-
-    with open(f"{wink_path}/training_data.json", "w") as f:
+    with open(f"{train_path}/training_data_{wink_n}.json", "w") as f:
         json.dump(data, f)

@@ -3,7 +3,7 @@ from deep_translator import GoogleTranslator
 
 
 wink_path = "./winks"
-for wink_n in range(1,8):
+for wink_n in range(1,9):
     with open(f"{wink_path}/wink_{wink_n}.json", "r") as f:
         wink_data = json.load(f)
 
@@ -12,7 +12,7 @@ for wink_n in range(1,8):
     wink_data["translated_userWritings"] = []
     i = 0
 
-    wink_data["userWritings"] = wink_data["userWritings"].split('>\n\n<')
+    # wink_data["userWritings"] = wink_data["userWritings"].split('>\n\n<') # use if writings are not list
 
     for write in wink_data["userWritings"]:
         i += 1

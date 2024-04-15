@@ -3,7 +3,7 @@ import json
 import yaml
 
 
-winks = list(range(1,8))
+winks = list(range(1,9))
 filename = "config.yaml"
 try:
   with open(filename, "r") as file:
@@ -13,7 +13,7 @@ except FileNotFoundError:
 
 for wink_n in winks:
     # Define the URL and API key
-    url = f"https://server-s3.onrender.com/book-data/{wink_n}"  # Replace with the actual URL
+    url = f"https://api.anky.lat/book-data/{wink_n}"  # Replace with the actual URL
     
     # Send the GET request
     response = requests.get(url, headers={"x-api-key": config_data["WINK_API_KEY"]})
