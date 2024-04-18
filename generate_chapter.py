@@ -9,11 +9,12 @@ from transformers import LlamaTokenizer
 
 model_path = "/teamspace/studios/this_studio/LLMs/noushermes2/nous-hermes-2-mixtral-8x7b-dpo.Q5_0.gguf"
 PROMPT_FORMAT_ID = "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO"
+tokenizer = LlamaTokenizer.from_pretrained(PROMPT_FORMAT_ID, trust_remote_code=True)
 
 ############################################################################################################
 
 wink_path = "/teamspace/studios/this_studio/anky/winks"
-wink_n = 8
+wink_n = 18
 with open(f"{wink_path}/proc_wink_{wink_n}.json", "r") as f:
     data = json.load(f)
 
@@ -21,13 +22,12 @@ with open(f"{wink_path}/proc_wink_{wink_n}.json", "r") as f:
 writings = ""
 i = 0
 
-for write in data["writingsForThisWink"]:
+for write in data["translated_userWritings"]:
     i += 1
     writings += f"Wink {wink_n}. - Writing number {i}\n"
     writings += write
     writings += '\n'
-    if i == 2:
-        break
+
 
 ############################################################################################################
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
@@ -36,7 +36,8 @@ n_gpu_layers = -1  # The number of layers to put on the GPU. The rest will be on
 n_batch = 32768  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
 n_ctx = 32768 # context window
 max_tokens=512 # max tokens to generate with LLM
-stopwords = ['Query:', 'Answer:', 'Assistant:']
+stopwords = ['Human:', 'User:' ,'Query:', 'Answer:', 'Assistant:', 'AI:',
+             'human:', 'user:' ,'query:', 'answer:', 'assistant:', 'ai:']
 last_n_tokens_size = 4 # window for repeat penalty, default 64
 repeat_penalty = 1.0 # 1.1
 temperature = 1.0 # 0.8
@@ -65,12 +66,17 @@ llm = LlamaCpp(
 )
 
 ############################################################################################################
+system_prompt = f"""You are a fantastic writer, a master of crafting amazing and creative stories.
+Your mission is to distill the underlying essence that brings together all of the writings that will be given as context, called WINK, which were written as streams of consciousness by people that were answering the following question:
+{data['prompts']['en']}
+Now you will receive instructions from the user regarding writing a new chapter, and it is your imperative mission to write the next chapter following everything that it says, in terms of structure, style, characters and the interweaving with the story.
+Inspire your writing on the WINK writings, on the teachings of Ramana Maharshi, and the writing style of David Foster Wallace, and have in mind that there are no boundaries for this process of writing. We are diving into the unknown.
+So just dive into the unknown, and use this books as a vehicle to catalyze awe and tell us what it means to be human, through Anky's story.
+"""
 
-tokenizer = LlamaTokenizer.from_pretrained(PROMPT_FORMAT_ID, trust_remote_code=True)
-
-def return_formatted_msgs(input_query, writings=''):
+def return_formatted_msgs(input_query, system_prompt, writings=''):
     msgs_ = [
-    {"role": "system", "content": "You are a world famous fantasy writer with decades of experience and a history of writing amazing book chapters. You are currently writing a book about Anky."},
+    {"role": "system", "content": f"{system_prompt}"},
     {"role": "assistant", "content" : "Understood, I am indeed great at writing, storytelling and fantasy."},
     {"role": "user", "content" : f"Here are previous book chapters:\n{writings}"},
     {"role": "assistant", "content" : "Thanks, I will put these to good use."},
@@ -82,12 +88,18 @@ def update_messages(msgs, input_query, ai_answer):
     return msgs + [{"role": "user", "content" : f"{query}"},
                     {"role": "assistant", "content" : f"{ai_answer}"}]
 
-human_query = "What is your main takeaway from the writings I have appended? List one learning per writing, that's all I need, nothing else."
-messages = return_formatted_msgs(human_query, writings='')
+############################################################################################################
+
+messages = return_formatted_msgs(data['superPrompt'], writings=writings)
 
 prompt = tokenizer.apply_chat_template(messages, tokenize=False)
-messages = prompt + '<|im_start|>assistant\n'
+messages = prompt + '<|im_start|>assistant\nChapter'
+print("")
+print("This is the formatted message input:")
+print("")
 print(messages)
-
+print("")
+print("Starting LLM invoke....")
+print("")
 result = llm.invoke(messages)
 print(result.content)
