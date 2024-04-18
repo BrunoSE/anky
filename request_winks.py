@@ -3,7 +3,7 @@ import json
 import yaml
 
 
-winks = list(range(1,9))
+winks = list(range(9,20))
 filename = "config.yaml"
 try:
   with open(filename, "r") as file:

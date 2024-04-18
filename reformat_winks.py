@@ -13,7 +13,7 @@ def return_formatted_msgs(user_query, assistant_answer):
     ]
     return msgs_
 
-for wink_n in range(1,9):
+for wink_n in range(9,19):
     data = []
     training_wink_data = []
     training_chapter_data = []
