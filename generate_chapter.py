@@ -50,7 +50,7 @@ callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 n_gpu_layers = -1  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
 n_batch = 32768  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
 n_ctx = 32768 # context window
-max_tokens= 512 # max tokens to generate with LLM
+max_tokens= 4096 # max tokens to generate with LLM
 stopwords = ['Human:', 'User:' ,'Query:', 'Answer:', 'Assistant:', 'AI:',
              'human:', 'user:' ,'query:', 'answer:', 'assistant:', 'ai:']
 last_n_tokens_size = 4 # window for repeat penalty, default 64

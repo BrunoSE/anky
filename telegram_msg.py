@@ -43,7 +43,7 @@ def main(telegram_msg):
     formatted_time = datetime.now(newYorkTz).strftime("%H:%M:%S")
     bot = Bot(token=token)
     asyncio.run(bot.send_message(chat_id=chat_id, text=telegram_msg))
-    print(telegram_msg)
+    print(f"Day {DAYS} - Message delivered.")
 
 if __name__ == "__main__":
     main(telegram_msg)
